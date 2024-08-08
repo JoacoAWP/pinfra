@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    template="/WEB-INF/carpeta_Templates/template_General.xhtml">
+
+    <ui:define name="main_content">
+        <div class="main" style="z-index: 1;">
+            <h:form styleClass="seccion_lista_usuarios" id="seccion_lista_usuarios">
+                <p:growl id="growlMessage" showDetail="true" style="z-index: 1;" />
+                <h2>Lista de Carreras</h2>
+                <br />
+                <br />
+                <div>
+                    <p:dataTable id="carrera" value="#{gestionCarreraEspecialidad.listaCarrerasReales}"
+                        var="carrera" widgetVar="lista_carreras_registradas"
+                        emptyMessage="No se encontraron Carreras"
+                        globalFilterFunction="#{gestionCarreraEspecialidad.globalFilterFunctionCarreraEspecialidad}"
+                        editable="true" rowKey="#{carrera.idCarreraEspecialidad}" class="my-table"
+                        scrollable="true" scrollHeight="800" border="1">
+
+                        <f:facet name="header">
+                            <div class="flex justify-content-end" style="display:flex; justify-content: space-between;">
+                                <p:inputText id="globalFilter"
+                                    onkeyup="PF('lista_carreras_registradas').filter()"
+                                    style="width:300px" placeholder="Buscar carrera" />
+
+                                <p:commandButton value="Nuevo" icon="pi pi-plus"
+                                    action="#{gestionCarreraEspecialidad.LimpiarCampos()}"
+                                    update=":dialogs:dialogRegistrarCarreraContent"
+                                    oncomplete="PF('dialogRegistrarCarrera').show()"
+                                    styleClass="ui-button-success" style="margin-right: .5rem;">
+                                    <p:resetInput target=":dialogs:dialogRegistrarCarreraContent" />
+                                </p:commandButton>
+                            </div>
+                        </f:facet>
+
+                        <p:column headerText="Id" sortBy="#{carrera.idCarreraEspecialidad}" style="width:40px;">
+                            #{carrera.idCarreraEspecialidad}
+                        </p:column>
+                        <p:column headerText="Nombre" sortBy="#{carrera.nombre}">
+                            #{carrera.nombre}
+                        </p:column>
+                        <p:column headerText="ITR">
+                            #{carrera.itr.nombre}
+                        </p:column>
+                        <p:column headerText="Departamento">
+                            #{carrera.itr.departamento.nombre}
+                        </p:column>
+                        <p:column headerText="Estado">
+                            #{carrera.estadoCarreraEspecialidad.nombre}
+                        </p:column>
+
+                        <p:column exportable="false" style="width:80px;">
+                            <p:commandButton icon="pi pi-pencil"
+                                update=":dialogs:dialogModificarCarreraContent"
+                                oncomplete="PF('dialogModificarCarrera').show()"
+                                action="#{gestionCarreraEspecialidad.seleccionarCarrera(carrera.idCarreraEspecialidad)}"
+                                styleClass="edit-button rounded-button ui-button-success">
+                                <f:setPropertyActionListener value="#{carrera}"
+                                    target="#{gestionCarreraEspecialidad.carreraEspecialidadSelecLista}" />
+                            </p:commandButton>
+                            <p:commandButton class="ui-button-warning rounded-button"
+                                icon="pi pi-trash" process="@this"
+                                update=":seccion_lista_usuarios:growlMessage :seccion_lista_usuarios:carrera"
+                                action="#{gestionCarreraEspecialidad.eliminarCarreraLogicamente(gestionCarreraEspecialidad.carreraEspecialidadSelecLista.idCarreraEspecialidad)}">
+                                <f:setPropertyActionListener value="#{carrera}"
+                                    target="#{gestionCarreraEspecialidad.carreraEspecialidadSelecLista}" />
+                                <p:confirm header="Confirmación"
+                                    message="Deseas desactivar la carrera: #{carrera.nombre}?"
+                                    icon="pi pi-info-circle" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+                    responsive="true" width="350">
+                    <p:commandButton value="No" type="button"
+                        styleClass="ui-confirmdialog-no ui-button-flat" />
+                    <p:commandButton value="Sí" type="button"
+                        styleClass="ui-confirmdialog-yes" />
+                </p:confirmDialog>
+            </h:form>
+
+            <h:form id="dialogs">
+                <p:dialog header="Modificar Carrera" showEffect="fade" modal="true"
+                    widgetVar="dialogModificarCarrera" responsive="true">
+                    <p:outputPanel id="dialogModificarCarreraContent" class="ui-fluid">
+                        <p:outputPanel>
+                            <div class="field">
+                                <p:outputLabel>Nombre</p:outputLabel>
+                                <p:inputText id="nombre"
+                                    value="#{gestionCarreraEspecialidad.carreraEspecialidadSeleccionada.nombre}" />
+                            </div>
+
+                            <div class="field">
+                                <p:outputLabel>Itr</p:outputLabel>
+                                <p:selectOneMenu id="itr" styleClass="anchoComboBox"
+                                    value="#{gestionCarreraEspecialidad.nombreItrSeleccionado}">
+                                    <f:selectItem itemValue="" itemLabel="" />
+                                    <f:selectItems value="#{gestionCarreraEspecialidad.cargarListaNombreItrs()}"
+                                        var="itr" itemLabel="#{itr}" itemValue="#{itr}" />
+                                </p:selectOneMenu>
+                            </div>
+
+                            <div class="field">
+                                <p:outputLabel>Estado Carrera</p:outputLabel>
+                                <p:selectOneMenu id="estadoCarrera" styleClass="anchoComboBox"
+                                    value="#{gestionCarreraEspecialidad.estadoCarreraEspecialidadSeleccionado}">
+                                    <f:selectItem itemValue="" itemLabel="" />
+                                    <f:selectItem itemValue="Activado" itemLabel="Activado" />
+                                    <f:selectItem itemValue="Desactivado" itemLabel="Desactivado" />
+                                </p:selectOneMenu>
+                            </div>
+                        </p:outputPanel>
+                    </p:outputPanel>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Guardar" icon="pi pi-check"
+                            action="#{gestionCarreraEspecialidad.modificarCarrera()}"
+                            update="dialogModificarCarreraContent :seccion_lista_usuarios:growlMessage :seccion_lista_usuarios:carrera"
+                            process="dialogModificarCarreraContent @this" />
+                        <p:commandButton value="Cancelar" icon="pi pi-times"
+                            onclick="PF('dialogModificarCarrera').hide()"
+                            action="#{gestionCarreraEspecialidad.LimpiarCampos()}"
+                            class="ui-button-secondary" type="button" />
+                    </f:facet>
+                </p:dialog>
+                
+                <p:dialog header="Registrar Carrera" showEffect="fade" modal="true"
+                    widgetVar="dialogRegistrarCarrera" responsive="true">
+                    <p:outputPanel id="dialogRegistrarCarreraContent" class="ui-fluid">
+                        <p:outputPanel>
+                            <div class="field">
+                                <p:outputLabel>Nombre</p:outputLabel>
+                                <p:inputText id="nombreRegistro"
+                                    value="#{gestionCarreraEspecialidad.carreraEspecialidadSeleccionada.nombre}" />
+                            </div>
+
+                            <div class="field">
+                                <p:outputLabel>Itr</p:outputLabel>
+                                <p:selectOneMenu id="itrRegistro" styleClass="anchoComboBox"
+                                    value="#{gestionCarreraEspecialidad.nombreItrSeleccionado}">
+                                    <f:selectItem itemValue="" itemLabel="" />
+                                    <f:selectItems value="#{gestionCarreraEspecialidad.cargarListaNombreItrs()}"
+                                        var="itr" itemLabel="#{itr}" itemValue="#{itr}" />
+                                </p:selectOneMenu>
+                            </div>
+
+                            <div class="field">
+                                <p:outputLabel>Estado Carrera</p:outputLabel>
+                                <p:selectOneMenu id="estadoCarreraRegistro" styleClass="anchoComboBox"
+                                    value="#{gestionCarreraEspecialidad.estadoCarreraEspecialidadSeleccionado}">
+                                    <f:selectItem itemValue="" itemLabel="" />
+                                    <f:selectItem itemValue="Activado" itemLabel="Activado" />
+                                    <f:selectItem itemValue="Desactivado" itemLabel="Desactivado" />
+                                </p:selectOneMenu>
+                            </div>
+                        </p:outputPanel>
+                    </p:outputPanel>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Guardar" icon="pi pi-check"
+                            action="#{gestionCarreraEspecialidad.registrarCarrera()}"
+                            update="dialogRegistrarCarreraContent :seccion_lista_usuarios:growlMessage :seccion_lista_usuarios:carrera estadoCarreraRegistro itrRegistro nombreRegistro"
+                            process="dialogRegistrarCarreraContent @this" />
+                        <p:commandButton value="Cancelar" icon="pi pi-times"
+                            onclick="PF('dialogRegistrarCarrera').hide()"
+                            action="#{gestionCarreraEspecialidad.LimpiarCampos()}"
+                            class="ui-button-secondary" type="button" />
+                    </f:facet>
+                </p:dialog>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="hojaDeEstilos_Login_Registro.css" />
+	<title>Inicio de sesión</title>
+</h:head>
+<h:body>
+	<div class="main">
+		<div class="contenedor__todo">
+			<div class="caja__trasera" style="justify-content: flex-end;">
+				<div class="caja__trasera-login">
+					<h:form>
+						<h3>¿Ya tienes una cuenta?</h3>
+						<p>Inicia sesión para entrar</p>
+						<p:commandButton id="btn__iniciar-sesion" class="button"
+							value="Iniciar Sesión" action="login.xhtml?faces-redirect=true"></p:commandButton>
+					</h:form>
+				</div>
+			</div>
+
+			<div class="contenedor__login_register contenedor__register">
+				<h:form id="formRegistro" class="formulario__register">
+					<p:growl id="growl" showDetail="true" style="z-index: 1;" />
+
+					<h2>Modificar contraseña</h2>
+					<h:panelGroup>
+						<p:outputLabel value="Introduce tu correo institucional: "
+							rendered="#{gestionPassword.recuperarPasswordMailBool}"></p:outputLabel>
+						<p:inputText id="mailIns"
+							value="#{gestionPassword.recuperarPasswordMail}"
+							rendered="#{gestionPassword.recuperarPasswordMailBool}"></p:inputText>
+
+						<p:outputLabel value="Introduce el código que te enviamos al correo: "
+							rendered="#{gestionPassword.recuperarPasswordCodigoBool}"></p:outputLabel>
+						<p:inputText id="codigo"
+							value="#{gestionPassword.recuperarPasswordCodigo}"
+							rendered="#{gestionPassword.recuperarPasswordCodigoBool}"></p:inputText>
+
+						<p:outputLabel value="Contraseña nueva" for="pwd1"
+							rendered="#{gestionPassword.newPasswordBool}" />
+						<p:password id="pwd1" value="#{gestionPassword.newPassword}"
+							match="pwd2" label="Contraseña" toggleMask="true"
+							validatorMessage="Error, Las contraseñas no coinciden"
+							rendered="#{gestionPassword.newPasswordBool}"
+							style="margin-top: 0px" />
+
+						<p:outputLabel value="Repetir contraseña" for="pwd2"
+							rendered="#{gestionPassword.newPasswordBool}" />
+						<p:password id="pwd2" value="#{gestionPassword.newPassword}"
+							toggleMask="true" rendered="#{gestionPassword.newPasswordBool}"
+							style="margin-top: 0px" />
+					</h:panelGroup>
+
+					<p:commandButton action="#{gestionPassword.recibirMail()}"
+						icon="pi pi-arrow-right"
+						style="margin-left: 300px; margin-top: 30px;"
+						rendered="#{gestionPassword.recuperarPasswordMailBool}" />
+					<p:commandButton action="#{gestionPassword.recibirCodigo()}"
+						icon="pi pi-arrow-right"
+						style="margin-left: 300px; margin-top: 30px;"
+						rendered="#{gestionPassword.recuperarPasswordCodigoBool}" />
+					<p:commandButton action="#{gestionPassword.cambiarContraseña()}"
+						icon="pi pi-arrow-right"
+						style="margin-left: 300px; margin-top: 30px;"
+						rendered="#{gestionPassword.newPasswordBool}" />
+				</h:form>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

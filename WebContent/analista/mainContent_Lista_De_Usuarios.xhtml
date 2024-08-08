@@ -1,0 +1,343 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    template="/WEB-INF/carpeta_Templates/template_General.xhtml">
+
+    <ui:define name="main_content">
+        <div class="main" style="z-index: 1;">
+            <h:form styleClass="seccion_lista_usuarios" id="seccion_lista_usuarios">
+                <p:growl id="growl" showDetail="true" style="z-index: 1;" />
+                <h2>Lista de usuarios</h2>
+                <br />
+                <br />
+                <div>
+                    <p:dataTable id="usuarios" value="#{gestionUsuario.listaUsuarios}"
+                        var="usuario" widgetVar="lista_usuarios_registrados"
+                        emptyMessage="No se encontraron Usuarios"
+                        globalFilterFunction="#{gestionUsuario.globalFilterFunction}"
+                        editable="true" rowKey="#{usuario.idUsuario}" class="my-table"
+                        scrollable="true" scrollHeight="800" border="1">
+
+                        <f:facet name="header">
+                            <div class="flex justify-content-end" style="display:flex; justify-content: space-between;">
+                                <p:inputText id="globalFilter"
+                                    onkeyup="PF('lista_usuarios_registrados').filter()"
+                                    style="width:300px" placeholder="Buscar usuario" />
+                                <p:commandButton value="Nuevo" icon="pi pi-plus"
+                                    update=":dialogs:dialogRegistrarUsuarioContent :seccion_lista_usuarios:growl"
+                                    action="#{gestionUsuario.limpiarCampos()}"
+                                    actionListener="#{gestionUsuario.rellenarListaCarreras()}"
+                                    oncomplete="PF('dialogRegistrarUsuario').show()"
+                                    styleClass="ui-button-success" style="margin-right: .5rem;">
+                                    <p:resetInput target=":dialogs:dialogRegistrarUsuarioContent" />
+                                </p:commandButton>
+                            </div>
+                        </f:facet>
+
+                        <p:column headerText="Id" sortBy="#{usuario.idUsuario}" style="width:40px;"> 
+                            #{usuario.idUsuario}
+                        </p:column>
+                        <p:column headerText="Nombre" sortBy="#{usuario.nombre}"> 
+                            #{usuario.nombre}
+                        </p:column>
+                        <p:column headerText="Apellido" sortBy="#{usuario.apellido}"> 
+                            #{usuario.apellido}
+                        </p:column>
+                        <p:column headerText="Documento"> 
+                            #{usuario.documento}
+                        </p:column>
+                        <p:column headerText="ITR"> 
+                            #{usuario.itr.nombre}
+                        </p:column>
+                        <p:column headerText="Tipo de Usuario"> 
+                            #{usuario.tipoUsuario.nombre}
+                        </p:column>
+                        <p:column headerText="Verificación" sortBy="#{usuario.verificacion.nombre}"> 
+                            #{usuario.verificacion.nombre}
+                        </p:column>
+                        <p:column headerText="Estado de Usuario" sortBy="#{usuario.estadoUsuario.nombre}"> 
+                            #{usuario.estadoUsuario.nombre}
+                        </p:column>
+
+                        <p:column exportable="false" style="width:80px;">
+                            <p:commandButton icon="pi pi-pencil"
+                                update=":dialogs:dialogModificarUsuarioContent"
+                                oncomplete="PF('dialogModificarUsuario').show()"
+                                action="#{gestionUsuario.seleccionarUsuario()}"
+                                styleClass="edit-button rounded-button ui-button-success">
+                                <f:setPropertyActionListener value="#{usuario}"
+                                    target="#{gestionUsuario.usuarioSelecLista}" />
+                            </p:commandButton>
+                            
+                            <p:commandButton class="ui-button-warning rounded-button"
+                                icon="pi pi-trash" process="@this"
+                                action="#{gestionUsuario.borrarUsuario(gestionUsuario.usuarioSelecLista.idUsuario)}">
+                                <f:setPropertyActionListener value="#{usuario}"
+                                    target="#{gestionUsuario.usuarioSelecLista}" />
+                                <p:confirm header="Confirmación"
+                                    message="Deseas eliminar el usuario: #{usuario.nombre} #{usuario.apellido}?"
+                                    icon="pi pi-info-circle" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+                    responsive="true" width="350">
+                    <p:commandButton value="No" type="button"
+                        styleClass="ui-confirmdialog-no ui-button-flat" />
+                    <p:commandButton value="Si" type="button"
+                        styleClass="ui-confirmdialog-yes" />
+                </p:confirmDialog>
+            </h:form>
+            
+            <h:form id="dialogs">
+                <p:dialog header="Modificar Usuario" showEffect="fade" modal="true"
+                    widgetVar="dialogModificarUsuario" responsive="true">
+                    <p:panelGrid id="dialogModificarUsuarioContent" class="ui-fluid" columns="4">
+                        
+                        <h:panelGroup>
+                            <p:outputLabel>Nombre:</p:outputLabel>
+                            <p:inputText id="nombre" placeholder="Nombre"
+                                value="#{gestionUsuario.usuarioSeleccionado.nombre}">
+                            </p:inputText>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup>
+                            <p:outputLabel>Apellido:</p:outputLabel>
+                            <p:inputText class="campo" id="apellido" placeholder="Apellido"
+                                value="#{gestionUsuario.usuarioSeleccionado.apellido}">
+                            </p:inputText>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup>
+                            <p:outputLabel>Documento:</p:outputLabel>
+                            <p:inputText class="campo" id="ci"
+                                placeholder="Documento de identidad" 
+                                value="#{gestionUsuario.usuarioSeleccionado.documento}">
+                            </p:inputText>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup>
+                            <p:outputLabel>Fecha de nacimiento:</p:outputLabel>
+                            <p:datePicker class="calendar" id="fechaNac"
+                                placeholder="Fecha de nacimiento" monthNavigator="true"
+                                yearNavigator="true"
+                                value="#{gestionUsuario.usuarioSeleccionado.fechaNacimiento}">
+                            </p:datePicker>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup>
+                            <p:outputLabel>Mail:</p:outputLabel>
+                            <p:inputText class="campo" id="email" placeholder="Email personal"
+                                value="#{gestionUsuario.usuarioSeleccionado.mail}">
+                            </p:inputText>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup>
+                            <p:outputLabel>Teléfono:</p:outputLabel>
+                            <p:inputText class="campo" id="telefono" placeholder="Teléfono"
+                                value="#{gestionUsuario.usuarioSeleccionado.telefono}">
+                            </p:inputText>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup>
+                            <p:outputLabel>Tipo de usuario:</p:outputLabel>
+                            <p:selectOneMenu id="tipoUsuario" placeholder="Tipo de Usuario"
+                                styleClass="anchoComboBox"
+                                value="#{gestionUsuario.tipoUsuarioSeleccionado}">
+                                <f:selectItem itemValue="" itemLabel="" />
+                                <f:selectItem itemValue="Analista" itemLabel="Analista" />
+                                <f:selectItem itemValue="Estudiante" itemLabel="Estudiante" />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup>
+                            <p:outputLabel>Dirección:</p:outputLabel>
+                            <p:inputText class="campo" id="direccion" placeholder="Dirección"
+                                value="#{gestionUsuario.usuarioSeleccionado.direccion}">
+                            </p:inputText>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup>
+                            <p:outputLabel>ITR:</p:outputLabel>
+                            <p:selectOneMenu id="itr" placeholder="ITR"
+                                styleClass="anchoComboBox"
+                                value="#{gestionUsuario.nombreItrSeleccionado}">
+                                <f:selectItems value="#{gestionUsuario.listaItrs}" var="itr"
+                                    itemLabel="#{itr}" itemValue="#{itr}" />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup>
+                            <p:outputLabel>Nombre de usuario:</p:outputLabel>
+                            <p:inputText class="campo" id="nombreUsuario"
+                                placeholder="Nombre de Usuario"
+                                value="#{gestionUsuario.usuarioSeleccionado.nombreUsuario}">
+                            </p:inputText>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup>
+                            <p:outputLabel>Contraseña:</p:outputLabel>
+                            <p:inputText class="campo" id="contrasenia"
+                                placeholder="Contraseña"
+                                value="#{gestionUsuario.usuarioSeleccionado.contrasenia}">
+                            </p:inputText>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup>
+                            <p:outputLabel>Estado de usuario:</p:outputLabel>
+                            <p:selectOneMenu id="estadoUsuario"
+                                placeholder="Estado de Usuario" styleClass="anchoComboBox"
+                                value="#{gestionUsuario.estadoUsuarioSeleccionado}">
+                                <f:selectItem itemValue="" itemLabel="" />
+                                <f:selectItem itemValue="Activo" itemLabel="Activo" />
+                                <f:selectItem itemValue="Inactivo" itemLabel="Inactivo" />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup>
+                            <p:outputLabel>Verificación:</p:outputLabel>
+                            <p:selectOneMenu id="verificacion"
+                                placeholder="Verificación de Usuario" styleClass="anchoComboBox"
+                                value="#{gestionUsuario.verificacionSeleccionado}">
+                                <f:selectItem itemValue="" itemLabel="" />
+                                <f:selectItem itemValue="Verificado" itemLabel="Verificado" />
+                                <f:selectItem itemValue="No verificado" itemLabel="No verificado" />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup rendered="#{gestionUsuario.inputsVisMod}">
+                            <p:outputLabel rendered="#{gestionUsuario.inputsVisMod}">Carrera/Especialidad:</p:outputLabel>
+                            <p:selectOneMenu id="carreraEspecialidad"
+                                placeholder="Carrera/Especialidad" styleClass="anchoComboBox"
+                                value="#{gestionUsuario.nombreCarreraSelecc}"
+                                rendered="#{gestionUsuario.inputsVisMod}">
+                                <f:selectItems value="#{gestionUsuario.listaCarreras}" var="carrera"
+                                    itemLabel="#{carrera}" itemValue="#{carrera}" />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup rendered="#{gestionUsuario.inputsVisMod}">
+                            <p:outputLabel rendered="#{gestionUsuario.inputsVisMod}">Id estudiantil:</p:outputLabel>
+                            <p:inputText class="campo" id="idEstudiantil"
+                                placeholder="Id Estudiantil"
+                                value="#{gestionUsuario.estudianteSeleccionado.idEstudiantil}"
+                                rendered="#{gestionUsuario.inputsVisMod}">
+                            </p:inputText>
+                        </h:panelGroup>            
+                    </p:panelGrid>
+                    
+                    <f:facet name="footer">
+                        <p:commandButton value="Guardar" icon="pi pi-check"
+                            action="#{gestionUsuario.modificarUsuario()}"
+                            update="dialogModificarUsuarioContent :seccion_lista_usuarios:growl :seccion_lista_usuarios:usuarios"
+                            process="dialogModificarUsuarioContent @this" />
+                        <p:commandButton value="Cancelar" icon="pi pi-times"
+                            onclick="PF('dialogModificarUsuario').hide()"
+                            action="#{gestionUsuario.limpiarCampos()}"
+                            class="ui-button-secondary" type="button" />
+                    </f:facet>
+                </p:dialog>
+                
+                <p:dialog header="Registrar Usuario" showEffect="fade" modal="true"
+                    widgetVar="dialogRegistrarUsuario" responsive="true">
+                    <p:panelGrid id="dialogRegistrarUsuarioContent" class="ui-fluid" columns="4">
+                        <p:inputText class="campo" id="nombreRegistro" placeholder="Nombre"
+                            value="#{gestionUsuario.usuarioSeleccionado.nombre}">
+                            <p:autoUpdate />
+                        </p:inputText>
+
+                        <p:inputText class="campo" id="apellidoRegistro" placeholder="Apellido"
+                            value="#{gestionUsuario.usuarioSeleccionado.apellido}">
+                            <p:autoUpdate />
+                        </p:inputText>
+
+                        <p:inputText class="campo" id="ciRegistro" placeholder="Documento de identidad"
+                            value="#{gestionUsuario.usuarioSeleccionado.documento}">
+                            <p:autoUpdate />
+                        </p:inputText>
+
+                        <p:datePicker class="calendar" id="fechaNacRegistro" placeholder="Fecha de nacimiento"
+                            monthNavigator="true" yearNavigator="true"
+                            value="#{gestionUsuario.usuarioSeleccionado.fechaNacimiento}">
+                            <p:autoUpdate />
+                        </p:datePicker>
+
+                        <p:inputText class="campo" id="emailRegistro" placeholder="Correo institucional"
+                            value="#{gestionUsuario.usuarioSeleccionado.mail}">
+                            <p:autoUpdate />
+                        </p:inputText>
+
+                        <p:inputText class="campo" id="telefonoRegistro" placeholder="Teléfono"
+                            value="#{gestionUsuario.usuarioSeleccionado.telefono}">
+                            <p:autoUpdate />
+                        </p:inputText>
+
+                        <p:selectOneMenu id="tipoUsuarioRegistro" placeholder="Tipo de Usuario"
+                            styleClass="anchoComboBox"
+                            value="#{gestionUsuario.tipoUsuarioSeleccionado}">
+                            <f:selectItem itemValue="" itemLabel="" />
+                            <f:selectItem itemValue="Analista" itemLabel="Analista" />
+                            <f:selectItem itemValue="Estudiante" itemLabel="Estudiante" />
+                            <p:ajax listener="#{gestionUsuario.menuItemChanged()}"
+                                update="opsEstudiantes" ignoreAutoUpdate="true" />
+                            <p:autoUpdate />
+                        </p:selectOneMenu>
+
+                        <p:inputText class="campo" id="direccionRegistro" placeholder="Dirección"
+                            value="#{gestionUsuario.usuarioSeleccionado.direccion}">
+                            <p:autoUpdate />
+                        </p:inputText>
+
+                        <p:selectOneMenu id="itrRegistro" placeholder="ITR" styleClass="anchoComboBox"
+                            value="#{gestionUsuario.nombreItrSeleccionado}">
+                            <f:selectItems value="#{gestionUsuario.cargarListaItr()}" var="itr"
+                                itemLabel="#{itr}" itemValue="#{itr}" />
+                            <p:autoUpdate />
+                        </p:selectOneMenu>
+
+                        <p:inputText class="campo" id="nombreUsuarioRegistro" placeholder="Nombre de Usuario"
+                            value="#{gestionUsuario.usuarioSeleccionado.nombreUsuario}">
+                            <p:autoUpdate />
+                        </p:inputText>
+
+                        <p:password id="contraseniaRegistro" placeholder="Contraseña"
+                            value="#{gestionUsuario.usuarioSeleccionado.contrasenia}" toggleMask="true">
+                            <p:autoUpdate />
+                        </p:password>
+
+                        <h:panelGroup id="opsEstudiantes">
+                            <p:selectOneMenu id="carreraEspecialidadRegistro" placeholder="Carrera/Especialidad"
+                                styleClass="anchoComboBox" value="#{gestionUsuario.nombreCarreraSelecc}"
+                                rendered="#{gestionUsuario.renderInputText}">
+                                <f:selectItems value="#{gestionUsuario.listaCarreras}" var="carrera"
+                                    itemLabel="#{carrera}" itemValue="#{carrera}" />
+                                <p:autoUpdate />
+                            </p:selectOneMenu>
+                            
+                            <p:inputText class="campo" id="idEstudiantilRegistro" placeholder="Id Estudiantil"
+                                value="#{gestionUsuario.estudianteSeleccionado.idEstudiantil}"
+                                rendered="#{gestionUsuario.renderInputText}">
+                                <p:autoUpdate />
+                            </p:inputText>
+                        </h:panelGroup>            
+                    </p:panelGrid>
+                    
+                    <f:facet name="footer">
+                        <p:commandButton value="Guardar" icon="pi pi-check"
+                            action="#{gestionUsuario.registrarUsuario()}"
+                            update="dialogRegistrarUsuarioContent :seccion_lista_usuarios:growl :seccion_lista_usuarios:usuarios"
+                            process="dialogRegistrarUsuarioContent @this" />
+                        <p:commandButton value="Cancelar" icon="pi pi-times"
+                            onclick="PF('dialogRegistrarUsuario').hide()"
+                            action="#{gestionUsuario.limpiarCampos()}"
+                            class="ui-button-secondary" type="button" />
+                    </f:facet>
+                </p:dialog>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="hojaDeEstilos_Login_Registro.css" />
+    <title>Inicio de sesión</title>
+</h:head>
+<h:body>
+    <div class="main">
+        <div class="contenedor__todo">
+            <div class="caja__trasera" style="justify-content: flex-end;">
+                <div class="caja__trasera-login">
+                    <h:form>
+                        <h3>¿Ya tienes una cuenta?</h3>
+                        <p>Inicia sesión para entrar</p>
+                        <p:commandButton id="btn__iniciar-sesion" class="button"
+                            value="Iniciar Sesión" action="login.xhtml?faces-redirect=true"></p:commandButton>
+                    </h:form>
+                </div>
+            </div>
+
+            <div class="contenedor__login_register contenedor__register">
+                <h:form id="formRegistro" class="formulario__register">
+                    <p:growl id="growl" showDetail="true" style="z-index: 1;" />
+
+                    <h2>Regístrate</h2>
+
+                    <p:inputText class="campo" id="nombre" placeholder="Nombre"
+                        value="#{gestionUsuario.usuarioSeleccionado.nombre}">
+                        <p:autoUpdate/>
+                    </p:inputText>
+
+                    <p:inputText class="campo" id="apellido" placeholder="Apellido"
+                        value="#{gestionUsuario.usuarioSeleccionado.apellido}">
+                        <p:autoUpdate/>
+                    </p:inputText>
+
+                    <p:inputText class="campo" id="ci" placeholder="Documento de identidad"
+                        value="#{gestionUsuario.usuarioSeleccionado.documento}">
+                        <p:autoUpdate/>
+                    </p:inputText>
+
+                    <p:datePicker class="calendar" id="fechaNac" placeholder="Fecha de nacimiento"
+                        monthNavigator="true" yearNavigator="true"
+                        value="#{gestionUsuario.usuarioSeleccionado.fechaNacimiento}">
+                        <p:autoUpdate/>
+                    </p:datePicker>
+
+                    <p:inputText class="campo" id="email" placeholder="Correo institucional"
+                        value="#{gestionUsuario.usuarioSeleccionado.mail}">
+                        <p:autoUpdate/>
+                    </p:inputText>
+
+                    <p:inputText class="campo" id="telefono" placeholder="Teléfono"
+                        value="#{gestionUsuario.usuarioSeleccionado.telefono}">
+                        <p:autoUpdate/>
+                    </p:inputText>
+
+                    <p:selectOneMenu id="tipoUsuario" placeholder="Tipo de Usuario"
+                        styleClass="anchoComboBox"
+                        value="#{gestionUsuario.tipoUsuarioSeleccionado}">
+                        <f:selectItem itemValue="" itemLabel="" />
+                        <f:selectItem itemValue="Analista" itemLabel="Analista" />
+                        <f:selectItem itemValue="Estudiante" itemLabel="Estudiante" />
+                        <p:ajax listener="#{gestionUsuario.menuItemChanged()}"
+                            update="opsEstudiantes" ignoreAutoUpdate="true"/>
+                        <p:autoUpdate/>
+                    </p:selectOneMenu>
+
+                    <p:inputText class="campo" id="direccion" placeholder="Dirección"
+                        value="#{gestionUsuario.usuarioSeleccionado.direccion}">
+                        <p:autoUpdate/>
+                    </p:inputText>
+
+                    <p:selectOneMenu id="itr" placeholder="ITR" styleClass="anchoComboBox"
+                        value="#{gestionUsuario.nombreItrSeleccionado}">
+                        <f:selectItems value="#{gestionUsuario.cargarListaItr()}" var="itr"
+                            itemLabel="#{itr}" itemValue="#{itr}" />
+                        <p:autoUpdate/>
+                    </p:selectOneMenu>
+
+                    <p:inputText class="campo" id="nombreUsuario" placeholder="Nombre de Usuario"
+                        value="#{gestionUsuario.usuarioSeleccionado.nombreUsuario}">
+                        <p:autoUpdate/>
+                    </p:inputText>
+
+                    <p:password id="contrasenia" placeholder="Contraseña"
+                        value="#{gestionUsuario.usuarioSeleccionado.contrasenia}"
+                        toggleMask="true">
+                    </p:password>
+
+                    <h:panelGroup id="opsEstudiantes">
+                        <p:selectOneMenu id="carreraEspecialidad" placeholder="Carrera/Especialidad"
+                            styleClass="anchoComboBox"
+                            value="#{gestionUsuario.nombreCarreraSelecc}"
+                            rendered="#{gestionUsuario.renderInputText}">
+                            <f:selectItems value="#{gestionUsuario.listaCarreras}" var="carrera"
+                                itemLabel="#{carrera}" itemValue="#{carrera}"/>
+                            <p:autoUpdate/>
+                        </p:selectOneMenu>
+
+                        <p:inputText class="campo" id="idEstudiantil" placeholder="Id Estudiantil"
+                            value="#{gestionUsuario.estudianteSeleccionado.idEstudiantil}"
+                            rendered="#{gestionUsuario.renderInputText}">
+                            <p:autoUpdate/>
+                        </p:inputText>
+                    </h:panelGroup>
+
+                    <p:commandButton class="button" value="Regístrarse"
+                        action="#{gestionUsuario.registrarUsuario()}"
+                        update="growl"
+                        process="@this growl nombre apellido ci fechaNac email telefono tipoUsuario direccion itr nombreUsuario contrasenia carreraEspecialidad idEstudiantil">
+                    </p:commandButton>
+                </h:form>
+            </div>
+        </div>
+    </div>
+</h:body>
+</html>

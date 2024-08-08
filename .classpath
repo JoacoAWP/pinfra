@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="JavaSource"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="lib/lombok.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jjwt-0.7.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-collections.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/primefaces-12.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/joaco/OneDrive/Escritorio/wildfly-26.0.1.Final/modules/system/layers/base/javax/ejb/api/main/jboss-ejb-api_3.2_spec-2.0.0.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/joaco/OneDrive/Escritorio/wildfly-26.0.1.Final/modules/system/layers/base/javax/inject/api/main/jakarta.inject-api-1.0.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/joaco/OneDrive/Escritorio/wildfly-26.0.1.Final/modules/system/layers/base/javax/enterprise/api/main/jakarta.enterprise.cdi-api-2.0.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/joaco/OneDrive/Escritorio/wildfly-26.0.1.Final/modules/system/layers/base/javax/faces/api/main/jboss-jsf-api_2.3_spec-3.1.0.SP01.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget/infradb">
+		<attributes>
+			<attribute name="owner.project.facets" value="jst.web;jst.jsf;jpt.jpa"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
+</classpath>

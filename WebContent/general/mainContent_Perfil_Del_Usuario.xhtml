@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    template="/WEB-INF/carpeta_Templates/template_General.xhtml">
+
+    <ui:define name="main_content">
+        <div class="main" style="z-index: 1;">
+            <h:form class="seccion_datos" id="seccion_datos">
+                <h2>Datos del usuario</h2>
+                <br />
+                <br />
+
+                <div>
+                    <h3>Personales</h3>
+                    <br />
+                    <h:panelGrid columns="2">
+                        Nombres:
+                        <h:outputLabel id="nombre"
+                            value="#{gestionUsuario.usuarioLogeado.nombre}"
+                            rendered="#{gestionUsuario.labelVisModPerfil}">
+                        </h:outputLabel>
+                        <p:inputText id="campoNombre"
+                            value="#{gestionUsuario.usuarioSeleccionado.nombre}"
+                            placeholder="#{gestionUsuario.usuarioLogeado.nombre}"
+                            rendered="#{gestionUsuario.inputsVisModPerfil}" />
+                        
+                        Apellidos:
+                        <h:outputLabel id="apellido"
+                            value="#{gestionUsuario.usuarioLogeado.apellido}"
+                            rendered="#{gestionUsuario.labelVisModPerfil}">
+                        </h:outputLabel>
+                        <p:inputText id="campoApellido"
+                            value="#{gestionUsuario.usuarioSeleccionado.apellido}"
+                            placeholder="#{gestionUsuario.usuarioLogeado.apellido}"
+                            rendered="#{gestionUsuario.inputsVisModPerfil}" />
+                        
+                        Cedula de identidad:
+                        <h:outputLabel id="documento"
+                            value="#{gestionUsuario.usuarioLogeado.documento}"
+                            rendered="#{gestionUsuario.labelVisModPerfil}">
+                        </h:outputLabel>
+                        <p:inputText id="campoDocumento"
+                            value="#{gestionUsuario.usuarioSeleccionado.documento}"
+                            placeholder="#{gestionUsuario.usuarioLogeado.documento}"
+                            rendered="#{gestionUsuario.inputsVisModPerfil}" />
+                        
+                        Fecha de nacimiento:
+                        <h:outputLabel id="fecNacimiento"
+                            value="#{gestionUsuario.usuarioLogeado.fechaNacimiento}"
+                            rendered="#{gestionUsuario.labelVisModPerfil}">
+                        </h:outputLabel>
+                        <p:datePicker class="calendar" id="campoFecNacimiento"
+                            placeholder="#{gestionUsuario.usuarioLogeado.fechaNacimiento}"
+                            monthNavigator="true" yearNavigator="true"
+                            value="#{gestionUsuario.usuarioSeleccionado.fechaNacimiento}"
+                            rendered="#{gestionUsuario.inputsVisModPerfil}"></p:datePicker>
+                        
+                        Dirección:
+                        <h:outputLabel id="direccion"
+                            value="#{gestionUsuario.usuarioLogeado.direccion}"
+                            rendered="#{gestionUsuario.labelVisModPerfil}">
+                        </h:outputLabel>
+                        <p:inputText id="campoDireccion"
+                            value="#{gestionUsuario.usuarioSeleccionado.direccion}"
+                            placeholder="#{gestionUsuario.usuarioLogeado.direccion}"
+                            rendered="#{gestionUsuario.inputsVisModPerfil}" />
+                        
+                        Email personal:
+                        <h:outputLabel id="emailPersonal"
+                            value="#{gestionUsuario.usuarioLogeado.mail}"
+                            rendered="#{gestionUsuario.labelVisModPerfil}">
+                        </h:outputLabel>
+                        <p:inputText id="campoEmailPersonal"
+                            value="#{gestionUsuario.usuarioSeleccionado.mail}"
+                            placeholder="#{gestionUsuario.usuarioLogeado.mail}"
+                            rendered="#{gestionUsuario.inputsVisModPerfil}" />
+                        
+                        Teléfono:
+                        <h:outputLabel id="tel"
+                            value="#{gestionUsuario.usuarioLogeado.telefono}"
+                            rendered="#{gestionUsuario.labelVisModPerfil}">
+                        </h:outputLabel>
+                        <p:inputText id="campoTel"
+                            value="#{gestionUsuario.usuarioSeleccionado.telefono}"
+                            placeholder="#{gestionUsuario.usuarioLogeado.telefono}"
+                            rendered="#{gestionUsuario.inputsVisModPerfil}" />
+                    </h:panelGrid>
+                </div>
+
+                <div>
+                    <h3>Institucionales</h3>
+                    <br />
+                    <h:panelGrid columns="2">
+                        ITR:
+                        <h:outputLabel id="itr"
+                            value="#{gestionUsuario.usuarioLogeado.itr.nombre}"
+                            rendered="#{gestionUsuario.labelVisModPerfil}">
+                        </h:outputLabel>
+                        <p:selectOneMenu id="campoITR"
+                            placeholder="#{gestionUsuario.usuarioLogeado.itr.nombre}"
+                            styleClass="anchoComboBox"
+                            value="#{gestionUsuario.nombreItrSeleccionado}"
+                            rendered="#{gestionUsuario.inputsVisModPerfil}">
+                            <f:selectItems value="#{gestionUsuario.listaItrs}" var="itr"
+                                itemLabel="#{itr}" itemValue="#{itr}" />
+                        </p:selectOneMenu>
+
+                        <p:outputLabel
+                            rendered="#{gestionUsuario.renderLabelModPerfilEst()}"
+                            value="Carrera/Especialidad:"></p:outputLabel>
+                        <p:outputLabel
+                            rendered="#{gestionUsuario.renderModPerfilEstudiante2()}"
+                            value="#{gestionUsuario.nombreCarreraSelecc}"></p:outputLabel>
+                        <p:selectOneMenu id="carreraEspecialidad"
+                            placeholder="#{gestionUsuario.nombreCarreraSelecc}"
+                            styleClass="anchoComboBox"
+                            required="#{gestionUsuario.menuButtonsRender}"
+                            value="#{gestionUsuario.nombreCarreraSelecc}"
+                            rendered="#{gestionUsuario.renderModPerfilEstudiante()}">
+                            <f:selectItems value="#{gestionUsuario.listaCarreras}" var="carrera"
+                                itemLabel="#{carrera}" itemValue="#{carrera}" />
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+                </div>
+
+                <div>
+                    <h:panelGrid columns="2">
+                        <p:commandButton value="Modificar"
+                            rendered="#{gestionUsuario.labelVisModPerfil}">
+                            <p:ajax listener="#{gestionUsuario.visModPerfil()}"
+                                update="seccion_datos" />
+                        </p:commandButton>
+                        <p:commandButton
+                            action="#{gestionUsuario.modificarDatosPropios()}"
+                            value="Guardar" rendered="#{gestionUsuario.inputsVisModPerfil}"
+                            update="seccion_datos :seccion_datos:growlMessage nombre campoNombre apellido campoApellido documento campoDocumento fecNacimiento campoFecNacimiento direccion campoDireccion emailPersonal campoEmailPersonal tel campoTel itr campoITR">
+                        </p:commandButton>
+                        <p:commandButton value="Cancelar"
+                            rendered="#{gestionUsuario.inputsVisModPerfil}">
+                            <p:ajax listener="#{gestionUsuario.visModPerfil()}"
+                                update="seccion_datos" />
+                        </p:commandButton>
+                    </h:panelGrid>
+                </div>
+                <p:growl id="growlMessage" showDetail="true" style="z-index: 1;" />
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

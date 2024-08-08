@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    template="/WEB-INF/carpeta_Templates/template_General.xhtml">
+
+    <ui:define name="main_content">
+        <div class="main" style="z-index: 1;">
+            <h:form styleClass="seccion_lista_usuarios" id="seccion_lista_usuarios">
+                <p:growl id="growlMessage" showDetail="true" style="z-index: 1;" />
+                <h2>Lista de Itr's</h2>
+                <br />
+                <br />
+                <div>
+                    <p:dataTable id="itr" value="#{gestionItr.listaItrsReales}"
+                        var="itr" widgetVar="lista_itrs_registrados"
+                        emptyMessage="No se encontraron Itr's"
+                        globalFilterFunction="#{gestionItr.globalFilterFunctionItr}"
+                        editable="true" rowKey="#{itr.idItr}" class="my-table"
+                        scrollable="true" scrollHeight="800" border="1">
+
+                        <f:facet name="header">
+                            <div class="flex justify-content-end" style="display:flex; justify-content: space-between;">
+                                <p:inputText id="globalFilter"
+                                    onkeyup="PF('lista_itrs_registrados').filter()"
+                                    style="width:300px" placeholder="Buscar itr" />
+
+                                <p:commandButton value="Nuevo" icon="pi pi-plus"
+                                    update=":dialogs:dialogRegistrarItrContent :seccion_lista_usuarios:growlMessage"
+                                    oncomplete="PF('dialogRegistrarItr').show()"
+                                    styleClass="ui-button-success" style="margin-right: .5rem;">
+                                    <p:resetInput target=":dialogs:dialogRegistrarItrContent" />
+                                </p:commandButton>
+                            </div>
+                        </f:facet>
+
+                        <p:column headerText="Id" sortBy="#{itr.idItr}" style="width:40px;">
+                            #{itr.idItr}
+                        </p:column>
+                        <p:column headerText="Nombre" sortBy="#{itr.nombre}">
+                            #{itr.nombre}
+                        </p:column>
+                        <p:column headerText="Departamento">
+                            #{itr.departamento.nombre}
+                        </p:column>
+                        <p:column headerText="Estado">
+                            #{itr.estadoItr.nombre}
+                        </p:column>
+
+                        <p:column exportable="false" style="width:80px;">
+                            <p:commandButton icon="pi pi-pencil"
+                                update=":dialogs:dialogModificarItrContent"
+                                oncomplete="PF('dialogModificarItr').show()"
+                                action="#{gestionItr.seleccionarItr(itr.idItr)}"
+                                styleClass="edit-button rounded-button ui-button-success">
+                                <f:setPropertyActionListener value="#{itr}"
+                                    target="#{gestionItr.itrSelecLista}" />
+                            </p:commandButton>
+                            <p:commandButton class="ui-button-warning rounded-button"
+                                update=":seccion_lista_usuarios:growlMessage :seccion_lista_usuarios:itr"
+                                icon="pi pi-trash" process="@this"
+                                action="#{gestionItr.eliminarItrLogicamente(gestionItr.itrSelecLista.idItr)}">
+                                <f:setPropertyActionListener value="#{itr}"
+                                    target="#{gestionItr.itrSelecLista}" />
+                                <p:confirm header="Confirmación"
+                                    message="Deseas desactivar el itr: #{itr.nombre}?"
+                                    icon="pi pi-info-circle" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+                    responsive="true" width="350">
+                    <p:commandButton value="No" type="button"
+                        styleClass="ui-confirmdialog-no ui-button-flat" />
+                    <p:commandButton value="Si" type="button"
+                        update=":seccion_lista_usuarios:growlMessage :seccion_lista_usuarios:itr"
+                        styleClass="ui-confirmdialog-yes" />
+                </p:confirmDialog>
+            </h:form>
+
+            <h:form id="dialogs">
+                <p:dialog header="Modificar Itr" showEffect="fade" modal="true"
+                    widgetVar="dialogModificarItr" responsive="true">
+                    <p:outputPanel id="dialogModificarItrContent" class="ui-fluid">
+                        <p:outputPanel>
+                            <div class="field">
+                                <p:outputLabel>Nombre</p:outputLabel>
+                                <p:inputText id="nombre"
+                                    value="#{gestionItr.itrSeleccionado.nombre}" />
+                            </div>
+
+                            <div class="field">
+                                <p:outputLabel>Departamento</p:outputLabel>
+                                <p:selectOneMenu id="departamento" styleClass="anchoComboBox"
+                                    value="#{gestionItr.nombreDepartamentoSeleccionado}">
+                                    <f:selectItem itemValue="" itemLabel="" />
+                                    <f:selectItems value="#{gestionItr.cargarListaNombreDepartamentos()}"
+                                        var="departamento" itemLabel="#{departamento}"
+                                        itemValue="#{departamento}" />
+                                </p:selectOneMenu>
+                            </div>
+
+                            <div class="field">
+                                <p:outputLabel>Estado Itr</p:outputLabel>
+                                <p:selectOneMenu id="estadoItr" styleClass="anchoComboBox"
+                                    value="#{gestionItr.estadoItrSeleccionado}">
+                                    <f:selectItem itemValue="" itemLabel="" />
+                                    <f:selectItem itemValue="Activado" itemLabel="Activado" />
+                                    <f:selectItem itemValue="Desactivado" itemLabel="Desactivado" />
+                                </p:selectOneMenu>
+                            </div>
+                        </p:outputPanel>
+                    </p:outputPanel>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Guardar" icon="pi pi-check"
+                            action="#{gestionItr.modificarItr()}"
+                            update="dialogModificarItrContent :seccion_lista_usuarios:growlMessage :seccion_lista_usuarios:itr"
+                            process="dialogModificarItrContent @this" />
+                        <p:commandButton value="Cancelar" icon="pi pi-times"
+                            onclick="PF('dialogModificarItr').hide()"
+                            action="#{gestionItr.LimpiarCampos()}"
+                            class="ui-button-secondary" type="button" />
+                    </f:facet>
+                </p:dialog>
+                
+                <p:dialog header="Registrar Itr" showEffect="fade" modal="true"
+                    widgetVar="dialogRegistrarItr" responsive="true">
+                    <p:outputPanel id="dialogRegistrarItrContent" class="ui-fluid">
+                        <p:outputPanel>
+                            <div class="field">
+                                <p:outputLabel>Nombre</p:outputLabel>
+                                <p:inputText id="nombreRegistro"
+                                    value="#{gestionItr.itrSeleccionado.nombre}" />
+                            </div>
+
+                            <div class="field">
+                                <p:outputLabel>Departamento</p:outputLabel>
+                                <p:selectOneMenu id="departamentoRegistro" styleClass="anchoComboBox"
+                                    value="#{gestionItr.nombreDepartamentoSeleccionado}">
+                                    <f:selectItem itemValue="" itemLabel="" />
+                                    <f:selectItems value="#{gestionItr.cargarListaNombreDepartamentos()}"
+                                        var="departamento" itemLabel="#{departamento}"
+                                        itemValue="#{departamento}" />
+                                </p:selectOneMenu>
+                            </div>
+
+                            <div class="field">
+                                <p:outputLabel>Estado Itr</p:outputLabel>
+                                <p:selectOneMenu id="estadoItrRegistro" styleClass="anchoComboBox"
+                                    value="#{gestionItr.estadoItrSeleccionado}">
+                                    <f:selectItem itemValue="" itemLabel="" />
+                                    <f:selectItem itemValue="Activado" itemLabel="Activado" />
+                                    <f:selectItem itemValue="Desactivado" itemLabel="Desactivado" />
+                                </p:selectOneMenu>
+                            </div>
+                        </p:outputPanel>
+                    </p:outputPanel>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Guardar" icon="pi pi-check"
+                            action="#{gestionItr.registrarItr()}"
+                            update="dialogRegistrarItrContent :seccion_lista_usuarios:growlMessage :seccion_lista_usuarios:itr estadoItrRegistro departamentoRegistro nombreRegistro"
+                            process="dialogRegistrarItrContent @this" />
+                        <p:commandButton value="Cancelar" icon="pi pi-times"
+                            onclick="PF('dialogRegistrarItr').hide()"
+                            action="#{gestionItr.cargarMenuListaItr()}"
+                            class="ui-button-secondary" type="button" />
+                    </f:facet>
+                </p:dialog>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

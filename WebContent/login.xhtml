@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="hojaDeEstilos_Login_Registro.css" />
+    <title>Inicio de sesión</title>
+</h:head>
+<h:body>
+    <div class="main">
+        <div class="contenedor__todo">
+            <div class="caja__trasera" style="justify-content: flex-start;">
+                <div class="caja__trasera-register">
+                    <h:form>
+                        <h3>¿No tenes una cuenta?</h3>
+                        <p>Regístrate para iniciar sesión</p>
+                        <p:commandButton id="btn__registrarse" class="button"
+                            value="Regístrarse" action="#{gestionUsuario.cargarRegistro()}"></p:commandButton>
+                    </h:form>
+                </div>
+            </div>
+
+            <div class="contenedor__login_register contenedor__login">
+                <h:form id="formulario__login" class="formulario__login">
+                    <h2>Iniciar Sesión</h2>
+                    <p:inputText class="campo" id="nombreUsuario"
+                        placeholder="Nombre de Usuario"
+                        value="#{gestionAutenticacion.nombreUsuarioLogin}"
+                        required="true"></p:inputText>
+                    <p:password id="contrasenia"
+                        placeholder="Contraseña" required="true" toggleMask="true"
+                        value="#{gestionAutenticacion.contraseniaLogin}"></p:password>
+                    <h:link value="¿Olvidaste tu Contraseña?" outcome="recuperacionpass.xhtml"></h:link>
+                    <p:commandButton class="button" value="Entrar"
+                        action="#{gestionAutenticacion.login()}"
+                        update="formulario__login"></p:commandButton>
+                </h:form>
+            </div>
+        </div>
+    </div>
+</h:body>
+</html>
